@@ -13,7 +13,7 @@ import * as selectors from './selectors';
 /**
  * Module Constants
  */
-const MODULE_KEY = 'amp/block-validation';
+export const MODULE_KEY = 'amp/block-validation';
 
 export default registerStore(
 	MODULE_KEY,

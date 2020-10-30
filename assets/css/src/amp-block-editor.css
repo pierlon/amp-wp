@@ -49,3 +49,43 @@
 .amp-unavailable-notice details[open] > summary {
 	margin-bottom: 1em;
 }
+
+/* Sidebar */
+.interface-pinned-items .components-button.has-icon[aria-label="AMP for WordPress"] {
+	padding: 0;
+	position: relative;
+}
+
+.amp-plugin-icon {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+.amp-error-count-badge {
+	align-items: center;
+	background: #bb522e;
+	border: 2px solid transparent;
+	border-radius: 8px;
+	color: #fff;
+	display: flex;
+	flex-shrink: 0;
+	font-size: 10px;
+	height: 16px;
+	justify-content: center;
+	position: absolute;
+	right: 1px;
+	top: 2px;
+	width: 16px;
+}
+
+.is-pressed .amp-error-count-badge {
+	border-color: #1e1e1e;
+}
+
+.is-pressed .amp-plugin-icon svg {
+	fill: #1e1e1e;
+	margin-left: -5px;
+}
