@@ -1,40 +1,45 @@
 /**
- * External dependencies
- */
-import PropTypes from 'prop-types';
-
-/**
  * WordPress dependencies
  */
-import { useSelect } from '@wordpress/data';
+import { PluginSidebar, PluginSidebarMoreMenuItem } from '@wordpress/edit-post';
+import { __ } from '@wordpress/i18n';
+import { registerPlugin } from '@wordpress/plugins';
 
 /**
  * Internal dependencies
  */
-import { MODULE_KEY } from '../../block-validation/store';
+import { Sidebar } from './sidebar';
+import { ToolbarIcon, MoreMenuIcon } from './icon';
 
-function Error( { title } ) {
+import './style.css';
+
+const name = 'amp-sidebar';
+const title = __( 'AMP for WordPress', 'amp' );
+
+/**
+ * Provides a dedicated sidebar for the plugin, with toggle buttons in the editor toolbar and more menu.
+ */
+function AMPPluginSidebar( ) {
 	return (
-		<span dangerouslySetInnerHTML={ { __html: title } } />
+		<>
+			<PluginSidebarMoreMenuItem
+				icon={ <MoreMenuIcon /> }
+				target={ name }
+			>
+				{ title }
+			</PluginSidebarMoreMenuItem>
+			<PluginSidebar
+				icon={ <ToolbarIcon /> }
+				name={ name }
+				title={ title }
+			>
+				<Sidebar />
+			</PluginSidebar>
+		</>
 	);
 }
-Error.propTypes = {
-	title: PropTypes.string.isRequired,
-};
 
-export function Sidebar() {
-	const { validationErrors, isDirty } = useSelect( ( select ) => ( {
-		validationErrors: select( MODULE_KEY ).getValidationErrors(),
-		isDirty: select( 'core/editor' ).isEditedPostDirty(),
-	} ) );
+const icon = MoreMenuIcon;
+const render = AMPPluginSidebar;
 
-	return (
-		<ul>
-			{ validationErrors.map( ( validationError, index ) => (
-				<li key={ `${ validationError.clientId }${ index }` }>
-					<Error { ...validationError } />
-				</li>
-			) ) }
-		</ul>
-	);
-}
+registerPlugin( name, { icon, render } );

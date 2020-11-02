@@ -1,0 +1,84 @@
+.interface-pinned-items .components-button.has-icon[aria-label="AMP for WordPress"] {
+	padding: 0;
+	position: relative;
+}
+
+.amp-plugin-icon {
+	align-items: center;
+	display: flex;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+
+.amp-plugin-icon svg {
+	margin-left: -5px;
+}
+
+.amp-error-count-badge {
+	align-items: center;
+	background: #bb522e;
+	border: 2px solid transparent;
+	border-radius: 8px;
+	color: #fff;
+	display: flex;
+	flex-shrink: 0;
+	font-size: 10px;
+	height: 16px;
+	justify-content: center;
+	position: absolute;
+	right: 1px;
+	top: 2px;
+	width: 16px;
+}
+
+.is-pressed .amp-error-count-badge {
+	border-color: #1e1e1e;
+}
+
+.is-pressed .amp-plugin-icon svg {
+	fill: #1e1e1e;
+}
+
+.amp-error > h2 > .components-button {
+	padding-left: 14px;
+	padding-right: 14px;
+}
+
+.amp-error__icons {
+	align-items: center;
+	display: flex;
+	width: 65px;
+}
+
+.amp-error__error-type-icon,
+.amp-error__block-type-icon {
+	align-items: center;
+	background: #707070;
+	border: 2px solid #fff;
+	border-radius: 12px;
+	display: flex;
+	height: 24px;
+	justify-content: center;
+	margin-left: -5px;
+	width: 24px;
+}
+
+.amp-error__block-type-icon {
+	margin-left: -3px;
+}
+
+.amp-error__block-type-icon svg {
+	height: 16px;
+	width: 16px;
+}
+
+.amp-error__block-type-icon svg path {
+	color: #fff;
+}
+
+.amp-error__title-text {
+	font-size: 13px;
+	line-height: 1.4;
+	width: 163px;
+}

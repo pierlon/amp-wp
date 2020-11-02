@@ -31,6 +31,13 @@ class AMP_Post_Meta_Box {
 	const BLOCK_ASSET_HANDLE = 'amp-block-editor';
 
 	/**
+	 * Handle for plugin sidebar assets.
+	 *
+	 * @var string
+	 */
+	const PLUGIN_SIDEBAR_HANDLE = 'amp-plugin-sidebar';
+
+	/**
 	 * The enabled status post meta value.
 	 *
 	 * @since 0.6
@@ -250,22 +257,46 @@ class AMP_Post_Meta_Box {
 			AMP__VERSION
 		);
 
-		wp_styles()->add_data( self::BLOCK_ASSET_HANDLE, 'rtl', 'replace' );
-
-		$asset_file   = AMP__DIR__ . '/assets/js/' . self::BLOCK_ASSET_HANDLE . '.asset.php';
-		$asset        = require $asset_file;
-		$dependencies = $asset['dependencies'];
-		$version      = $asset['version'];
-
-		wp_enqueue_script(
-			self::BLOCK_ASSET_HANDLE,
-			amp_get_asset_url( 'js/' . self::BLOCK_ASSET_HANDLE . '.js' ),
-			$dependencies,
-			$version,
-			true
+		wp_enqueue_style(
+			self::PLUGIN_SIDEBAR_HANDLE,
+			amp_get_asset_url( 'css/' . self::PLUGIN_SIDEBAR_HANDLE . '.css' ),
+			[ self::BLOCK_ASSET_HANDLE ],
+			AMP__VERSION
 		);
 
-		$data = [
+		wp_styles()->add_data( self::BLOCK_ASSET_HANDLE, 'rtl', 'replace' );
+		wp_styles()->add_data( self::PLUGIN_SIDEBAR_HANDLE, 'rtl', 'replace' );
+
+		foreach ( [ self::BLOCK_ASSET_HANDLE, self::PLUGIN_SIDEBAR_HANDLE ] as $handle ) {
+
+			$asset_file   = AMP__DIR__ . '/assets/js/' . $handle . '.asset.php';
+			$asset        = require $asset_file;
+			$dependencies = $asset['dependencies'];
+			$version      = $asset['version'];
+
+			wp_enqueue_script(
+				$handle,
+				amp_get_asset_url( 'js/' . $handle . '.js' ),
+				$dependencies,
+				$version,
+				true
+			);
+
+			if ( function_exists( 'wp_set_script_translations' ) ) {
+				wp_set_script_translations( $handle, 'amp' );
+			} elseif ( function_exists( 'wp_get_jed_locale_data' ) || function_exists( 'gutenberg_get_jed_locale_data' ) ) {
+				$locale_data  = function_exists( 'wp_get_jed_locale_data' ) ? wp_get_jed_locale_data( 'amp' ) : gutenberg_get_jed_locale_data( 'amp' );
+				$translations = wp_json_encode( $locale_data );
+
+				wp_add_inline_script(
+					$handle,
+					'wp.i18n.setLocaleData( ' . $translations . ', "amp" );',
+					'after'
+				);
+			}
+		}
+
+		$block_data = [
 			'ampSlug'         => amp_get_slug(),
 			'errorMessages'   => $this->get_error_messages( $status_and_errors['errors'] ),
 			'hasThemeSupport' => ! amp_is_legacy(),
@@ -275,21 +306,23 @@ class AMP_Post_Meta_Box {
 		wp_localize_script(
 			self::BLOCK_ASSET_HANDLE,
 			'ampBlockEditor',
-			$data
+			$block_data
 		);
 
-		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( self::BLOCK_ASSET_HANDLE, 'amp' );
-		} elseif ( function_exists( 'wp_get_jed_locale_data' ) || function_exists( 'gutenberg_get_jed_locale_data' ) ) {
-			$locale_data  = function_exists( 'wp_get_jed_locale_data' ) ? wp_get_jed_locale_data( 'amp' ) : gutenberg_get_jed_locale_data( 'amp' );
-			$translations = wp_json_encode( $locale_data );
+		$plugin_sidebar_data = [
+			'HTML_ATTRIBUTE_ERROR_TYPE' => AMP_Validation_Error_Taxonomy::HTML_ATTRIBUTE_ERROR_TYPE,
+			'HTML_ELEMENT_ERROR_TYPE'   => AMP_Validation_Error_Taxonomy::HTML_ELEMENT_ERROR_TYPE,
+			'JS_ERROR_TYPE'             => AMP_Validation_Error_Taxonomy::JS_ERROR_TYPE,
+			'CSS_ERROR_TYPE'            => AMP_Validation_Error_Taxonomy::CSS_ERROR_TYPE,
+		];
 
-			wp_add_inline_script(
-				self::BLOCK_ASSET_HANDLE,
-				'wp.i18n.setLocaleData( ' . $translations . ', "amp" );',
-				'after'
-			);
-		}
+		wp_add_inline_script(
+			self::PLUGIN_SIDEBAR_HANDLE,
+			sprintf(
+				'var ampPluginSidebar = %s',
+				wp_json_encode( $plugin_sidebar_data )
+			)
+		);
 	}
 
 	/**
