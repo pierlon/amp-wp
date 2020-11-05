@@ -70,13 +70,6 @@ class AMP_Validation_Manager {
 	const PLUGIN_ACTIVATION_VALIDATION_ERRORS_TRANSIENT_KEY = 'amp_plugin_activation_validation_errors';
 
 	/**
-	 * The name of the REST API field with the AMP validation results.
-	 *
-	 * @var string
-	 */
-	const VALIDITY_REST_FIELD_NAME = 'amp_validity';
-
-	/**
 	 * The errors encountered when validating.
 	 *
 	 * @var array[][] {
@@ -121,15 +114,6 @@ class AMP_Validation_Manager {
 	 * @var array[]
 	 */
 	public static $extra_style_sources = [];
-
-	/**
-	 * Post IDs for posts that have been updated which need to be re-validated.
-	 *
-	 * Keys are post IDs and values are whether the post has been re-validated.
-	 *
-	 * @var bool[]
-	 */
-	public static $posts_pending_frontend_validation = [];
 
 	/**
 	 * Current sources gathered for a given hook currently being run.
@@ -203,10 +187,7 @@ class AMP_Validation_Manager {
 		AMP_Validated_URL_Post_Type::register();
 		AMP_Validation_Error_Taxonomy::register();
 
-		add_action( 'save_post', [ __CLASS__, 'handle_save_post_prompting_validation' ] );
-		add_action( 'enqueue_block_editor_assets', [ __CLASS__, 'enqueue_block_validation' ] );
 		add_action( 'edit_form_top', [ __CLASS__, 'print_edit_form_validation_status' ], 10, 2 );
-		add_action( 'rest_api_init', [ __CLASS__, 'add_rest_api_fields' ] );
 
 		// Add actions for checking theme support is present to determine plugin compatibility and show validation links in the admin bar.
 		// Actions and filters involved in validation.
@@ -543,173 +524,7 @@ class AMP_Validation_Manager {
 		add_filter( 'embed_oembed_html', [ __CLASS__, 'decorate_embed_source' ], PHP_INT_MAX, 3 );
 		add_filter( 'the_content', [ __CLASS__, 'add_block_source_comments' ], 8 ); // The do_blocks() function runs at priority 9.
 	}
-
-	/**
-	 * Handle save_post action to queue re-validation of the post on the frontend.
-	 *
-	 * This is intended to only apply to post edits made in the classic editor.
-	 *
-	 * @see AMP_Validation_Manager::get_amp_validity_rest_field() The method responsible for validation post changes via Gutenberg.
-	 * @see AMP_Validation_Manager::validate_queued_posts_on_frontend()
-	 *
-	 * @param int $post_id Post ID.
-	 */
-	public static function handle_save_post_prompting_validation( $post_id ) {
-		global $pagenow;
-
-		if ( ! self::get_dev_tools_user_access()->is_user_enabled() ) {
-			return;
-		}
-
-		$post = get_post( $post_id );
-
-		$is_classic_editor_post_save = (
-			isset( $_SERVER['REQUEST_METHOD'] )
-			&&
-			'POST' === $_SERVER['REQUEST_METHOD']
-			&&
-			'post.php' === $pagenow
-			&&
-			isset( $_POST['post_ID'] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			&&
-			(int) $_POST['post_ID'] === (int) $post_id // phpcs:ignore WordPress.Security.NonceVerification.Missing
-		);
-
-		$should_validate_post = (
-			$is_classic_editor_post_save
-			&&
-			self::post_supports_validation( $post )
-			&&
-			! isset( self::$posts_pending_frontend_validation[ $post_id ] )
-		);
-		if ( $should_validate_post ) {
-			self::$posts_pending_frontend_validation[ $post_id ] = true;
-
-			// The reason for shutdown is to ensure that all postmeta changes have been saved, including whether AMP is enabled.
-			if ( ! has_action( 'shutdown', [ __CLASS__, 'validate_queued_posts_on_frontend' ] ) ) {
-				add_action( 'shutdown', [ __CLASS__, 'validate_queued_posts_on_frontend' ] );
-			}
-		}
-	}
-
-	/**
-	 * Validate the posts pending frontend validation.
-	 *
-	 * @see AMP_Validation_Manager::handle_save_post_prompting_validation()
-	 *
-	 * @return array Mapping of post ID to the result of validating or storing the validation result.
-	 */
-	public static function validate_queued_posts_on_frontend() {
-		$posts = array_filter(
-			array_map( 'get_post', array_keys( array_filter( self::$posts_pending_frontend_validation ) ) ),
-			function( $post ) {
-				return self::post_supports_validation( $post );
-			}
-		);
-
-		$validation_posts = [];
-
-		/*
-		 * It is unlikely that there will be more than one post in the array.
-		 * For the bulk recheck action, see AMP_Validated_URL_Post_Type::handle_bulk_action().
-		 */
-		foreach ( $posts as $post ) {
-			$url = amp_get_permalink( $post->ID );
-			if ( ! $url ) {
-				$validation_posts[ $post->ID ] = new WP_Error( 'no_amp_permalink' );
-				continue;
-			}
-
-			// Prevent re-validating.
-			self::$posts_pending_frontend_validation[ $post->ID ] = false;
-
-			$invalid_url_post_id = (int) get_post_meta( $post->ID, '_amp_validated_url_post_id', true );
-
-			$validity = self::validate_url_and_store( $url, $invalid_url_post_id );
-
-			// Remember the amp_validated_url post so that when the slug changes the old amp_validated_url post can be updated.
-			if ( ! is_wp_error( $validity ) && $invalid_url_post_id !== $validity['post_id'] ) {
-				update_post_meta( $post->ID, '_amp_validated_url_post_id', $validity['post_id'] );
-			}
-
-			$validation_posts[ $post->ID ] = $validity instanceof WP_Error ? $validity : $validity['post_id'];
-		}
-
-		return $validation_posts;
-	}
-
-	/**
-	 * Adds fields to the REST API responses, in order to display validation errors.
-	 *
-	 * @return void
-	 */
-	public static function add_rest_api_fields() {
-		register_rest_field(
-			AMP_Post_Type_Support::get_post_types_for_rest_api(),
-			self::VALIDITY_REST_FIELD_NAME,
-			[
-				'get_callback' => [ __CLASS__, 'get_amp_validity_rest_field' ],
-				'schema'       => [
-					'description' => __( 'AMP validity status', 'amp' ),
-					'type'        => 'object',
-				],
-			]
-		);
-	}
-
-	/**
-	 * Adds a field to the REST API responses to display the validation status.
-	 *
-	 * First, get existing errors for the post.
-	 * If there are none, validate the post and return any errors.
-	 *
-	 * @param array           $post_data  Data for the post.
-	 * @param string          $field_name The name of the field to add.
-	 * @param WP_REST_Request $request    The name of the field to add.
-	 * @return array|null $validation_data Validation data if it's available, or null.
-	 */
-	public static function get_amp_validity_rest_field( $post_data, $field_name, $request ) {
-		if ( ! current_user_can( 'edit_post', $post_data['id'] ) || ! self::get_dev_tools_user_access()->is_user_enabled() || ! self::post_supports_validation( $post_data['id'] ) ) {
-			return null;
-		}
-		$post = get_post( $post_data['id'] );
-
-		$validation_status_post = null;
-		if ( in_array( $request->get_method(), [ 'PUT', 'POST' ], true ) ) {
-			if ( ! isset( self::$posts_pending_frontend_validation[ $post->ID ] ) ) {
-				self::$posts_pending_frontend_validation[ $post->ID ] = true;
-			}
-			$results = self::validate_queued_posts_on_frontend();
-			if ( isset( $results[ $post->ID ] ) && is_int( $results[ $post->ID ] ) ) {
-				$validation_status_post = get_post( $results[ $post->ID ] );
-			}
-		}
-
-		if ( empty( $validation_status_post ) ) {
-			$validation_status_post = AMP_Validated_URL_Post_Type::get_invalid_url_post( amp_get_permalink( $post->ID ) );
-		}
-
-		$field = [
-			'results'     => [],
-			'review_link' => null,
-		];
-
-		if ( $validation_status_post ) {
-			$field['review_link'] = get_edit_post_link( $validation_status_post->ID, 'raw' );
-			foreach ( AMP_Validated_URL_Post_Type::get_invalid_url_validation_errors( $validation_status_post ) as $result ) {
-				$field['results'][] = [
-					'sanitized'   => AMP_Validation_Error_Taxonomy::VALIDATION_ERROR_ACK_ACCEPTED_STATUS === $result['status'],
-					'title'       => AMP_Validation_Error_Taxonomy::get_error_title_from_code( $result['data'] ),
-					'error'       => $result['data'],
-					'status'      => $result['status'],
-					'term_status' => $result['term_status'],
-					'forced'      => $result['forced'],
-				];
-			}
-		}
-
-		return $field;
-	}
+	
 
 	/**
 	 * Map the amp_validate meta capability to the primitive manage_options capability.
@@ -2370,70 +2185,6 @@ class AMP_Validation_Manager {
 					esc_html__( 'Dismiss this notice.', 'amp' )
 				);
 			}
-		}
-	}
-
-	/**
-	 * Enqueues the block validation script.
-	 *
-	 * @return void
-	 */
-	public static function enqueue_block_validation() {
-		/*
-		 * The AMP_Validation_Manager::post_supports_validation() method is not being used here because
-		 * a post's status for validation checking can change during the life of the editor, such as when
-		 * the user toggles AMP back on after having turned it off, and then gets the validation
-		 * warnings appearing due to the amp-block-validation having been enqueued already.
-		 */
-		if ( ! self::get_dev_tools_user_access()->is_user_enabled() ) {
-			return;
-		}
-
-		$slug = 'amp-block-validation';
-
-		$asset_file   = AMP__DIR__ . '/assets/js/' . $slug . '.asset.php';
-		$asset        = require $asset_file;
-		$dependencies = $asset['dependencies'];
-		$version      = $asset['version'];
-
-		wp_enqueue_script(
-			$slug,
-			amp_get_asset_url( "js/{$slug}.js" ),
-			$dependencies,
-			$version,
-			true
-		);
-
-		wp_enqueue_style(
-			$slug,
-			amp_get_asset_url( "css/{$slug}.css" ),
-			false,
-			AMP__VERSION
-		);
-
-		wp_styles()->add_data( $slug, 'rtl', 'replace' );
-
-		$data = [
-			'isSanitizationAutoAccepted' => self::is_sanitization_auto_accepted(),
-		];
-
-		wp_localize_script(
-			$slug,
-			'ampBlockValidation',
-			$data
-		);
-
-		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( $slug, 'amp' );
-		} elseif ( function_exists( 'wp_get_jed_locale_data' ) || function_exists( 'gutenberg_get_jed_locale_data' ) ) {
-			$locale_data  = function_exists( 'wp_get_jed_locale_data' ) ? wp_get_jed_locale_data( 'amp' ) : gutenberg_get_jed_locale_data( 'amp' );
-			$translations = wp_json_encode( $locale_data );
-
-			wp_add_inline_script(
-				$slug,
-				'wp.i18n.setLocaleData( ' . $translations . ', "amp" );',
-				'after'
-			);
 		}
 	}
 }

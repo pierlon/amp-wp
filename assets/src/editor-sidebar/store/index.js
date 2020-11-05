@@ -22,7 +22,7 @@ export default registerStore(
 		selectors,
 		actions,
 		initialState: {
-			...window.ampBlockValidation,
+			...window.ampPluginSidebar,
 			errors: [],
 			reviewLink: undefined,
 		},

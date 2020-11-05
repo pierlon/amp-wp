@@ -97,8 +97,7 @@ const blockEditor = {
 	},
 	entry: {
 		'amp-block-editor': './assets/src/block-editor/index.js',
-		'amp-block-validation': './assets/src/block-validation/index.js',
-		'amp-plugin-sidebar': './assets/src/block-editor/sidebar',
+		'amp-plugin-sidebar': './assets/editor-sidebar',
 	},
 	plugins: [
 		...sharedConfig.plugins,
