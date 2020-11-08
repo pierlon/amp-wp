@@ -6,5 +6,5 @@ export const VALIDATION_ERROR_ACK_ACCEPTED_STATUS = 3;
 
 export const AMP_VALIDATION_ERROR_NOTICE_ID = 'amp-errors-notice';
 
-// See \AMP_Validation_Manager::VALIDITY_REST_FIELD_NAME in PHP.
-export const AMP_VALIDITY_REST_FIELD_NAME = 'amp_validity';
+// See \AMP_Validation_Manager::REST_FIELD_NAME_VALIDITY in PHP.
+export const AMP_REST_FIELD_NAME_VALIDITY = 'amp_validity';

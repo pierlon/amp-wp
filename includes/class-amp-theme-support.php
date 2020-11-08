@@ -6,7 +6,7 @@
  */
 
 use AmpProject\Amp;
-use AmpProject\AmpWP\DevTools\ErrorPage;
+use AmpProject\AmpWP\Admin\PostAMPStatus;
 use AmpProject\AmpWP\ExtraThemeAndPluginHeaders;
 use AmpProject\AmpWP\Option;
 use AmpProject\AmpWP\QueryVar;
@@ -784,7 +784,7 @@ class AMP_Theme_Support {
 				'label'  => __( 'Homepage', 'amp' ),
 				'parent' => 'is_singular',
 			];
-			if ( AMP_Post_Meta_Box::DISABLED_STATUS === get_post_meta( get_option( 'page_on_front' ), AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) ) {
+			if ( PostAMPStatus::DISABLED_STATUS === get_post_meta( get_option( 'page_on_front' ), PostAMPStatus::STATUS_POST_META_KEY, true ) ) {
 				/* translators: %s: the URL to the edit post screen. */
 				$templates['is_front_page']['description'] = sprintf( __( 'Currently disabled at the <a href="%s">page level</a>.', 'amp' ), esc_url( get_edit_post_link( get_option( 'page_on_front' ) ) ) );
 			}
@@ -793,7 +793,7 @@ class AMP_Theme_Support {
 			$templates['is_home'] = [
 				'label' => __( 'Blog', 'amp' ),
 			];
-			if ( AMP_Post_Meta_Box::DISABLED_STATUS === get_post_meta( get_option( 'page_for_posts' ), AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) ) {
+			if ( PostAMPStatus::DISABLED_STATUS === get_post_meta( get_option( 'page_for_posts' ), PostAMPStatus::STATUS_POST_META_KEY, true ) ) {
 				/* translators: %s: the URL to the edit post screen. */
 				$templates['is_home']['description'] = sprintf( __( 'Currently disabled at the <a href="%s">page level</a>.', 'amp' ), esc_url( get_edit_post_link( get_option( 'page_for_posts' ) ) ) );
 			}

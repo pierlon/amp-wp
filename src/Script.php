@@ -15,6 +15,20 @@ namespace AmpProject\AmpWP;
 final class Script {
 
 	/**
+	 * Option to indicate the script should be printed in the document head.
+	 *
+	 * @var string
+	 */
+	const FLAG_NAME_IN_HEAD = 'in_head';
+
+	/**
+	 * Flag for use if the script has an accompanying stylesheet.
+	 *
+	 * @var string
+	 */
+	const FLAG_NAME_HAS_STYLE = 'has_style';
+
+	/**
 	 * The script handle.
 	 *
 	 * @var string
@@ -22,21 +36,21 @@ final class Script {
 	private $handle;
 
 	/**
-	 * Whether the script has a CSS file with the same name.
+	 * Array of options flags.
 	 *
-	 * @var bool
+	 * @var array
 	 */
-	private $has_style;
+	private $options = [];
 
 	/**
 	 * Class constructor.
 	 *
-	 * @param string  $handle Script handle. Is expected to be the name of the file.
-	 * @param boolean $has_style Whether the script has a CSS file with the same name.
+	 * @param string   $handle Script handle. Is expected to be the name of the file.
+	 * @param string[] $options Array of options flags.
 	 */
-	public function __construct( $handle, $has_style = false ) {
-		$this->handle    = $handle;
-		$this->has_style = $has_style;
+	public function __construct( $handle, $options = [] ) {
+		$this->handle  = $handle;
+		$this->options = $options;
 	}
 
 	/**
@@ -58,7 +72,7 @@ final class Script {
 			amp_get_asset_url( 'js/' . $this->handle . '.js' ),
 			$dependencies,
 			$version,
-			true
+			! $this->get_option( self::FLAG_NAME_IN_HEAD )
 		);
 
 		if ( function_exists( 'wp_set_script_translations' ) ) {
@@ -74,7 +88,7 @@ final class Script {
 			);
 		}
 
-		if ( $this->has_style ) {
+		if ( $this->get_option( self::FLAG_NAME_HAS_STYLE ) ) {
 			$this->enqueue_style( $version );
 		}
 	}
@@ -93,7 +107,8 @@ final class Script {
 				'var %s = %s',
 				esc_js( $var_name ),
 				wp_json_encode( $data )
-			)
+			),
+			'before'
 		);
 	}
 
@@ -111,5 +126,15 @@ final class Script {
 		);
 
 		wp_styles()->add_data( $this->handle, 'rtl', 'replace' );
+	}
+
+	/**
+	 * Returns whether the specified flag was passed in the options array.
+	 *
+	 * @param string $flag_name Flag name.
+	 * @return bool
+	 */
+	private function get_option( $flag_name ) {
+		return in_array( $flag_name, $this->options, true );
 	}
 }

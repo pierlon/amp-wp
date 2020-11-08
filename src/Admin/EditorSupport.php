@@ -37,20 +37,6 @@ final class EditorSupport implements Conditional, Delayed, Registerable, Service
 	const WP_MIN_VERSION = '5.2';
 
 	/**
-	 * Whether Gutenberg provides support.
-	 *
-	 * @var boolean
-	 */
-	private $gb_plugin_supports_editor_features;
-
-	/**
-	 * Whether WP core provides support.
-	 *
-	 * @var boolean
-	 */
-	private $wp_core_supports_editor_features;
-
-	/**
 	 * Check whether the conditional object is currently needed.
 	 *
 	 * @return bool Whether the conditional object is needed.
@@ -106,11 +92,7 @@ final class EditorSupport implements Conditional, Delayed, Registerable, Service
 	 * @param int|WP_Post|null $post The current post, or null to use the global post objecdt.
 	 */
 	public function post_supports_amp( $post = null ) {
-		if ( is_null( $post ) ) {
-			$post = get_post();
-		} else {
-			$post = get_post( $post );
-		}
+		$post = get_post( $post );
 
 		if ( empty( $post ) ) {
 			return false;

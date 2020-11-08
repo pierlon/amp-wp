@@ -5,8 +5,11 @@
  * @package AMP
  */
 
+use AmpProject\AmpWP\Admin\ClassicEditor;
+use AmpProject\AmpWP\Admin\PostAMPStatus;
+
 // Check referrer.
-if ( ! ( $this instanceof AMP_Post_Meta_Box ) ) {
+if ( ! ( $this instanceof ClassicEditor ) ) {
 	return;
 }
 
@@ -30,13 +33,13 @@ if ( ! ( $this instanceof AMP_Post_Meta_Box ) ) {
 	<div id="amp-status-select" class="hide-if-js" data-amp-status="<?php echo esc_attr( $status ); ?>">
 		<?php if ( empty( $errors ) ) : ?>
 			<fieldset>
-				<input id="amp-status-enabled" type="radio" name="<?php echo esc_attr( AMP_Post_Meta_Box::STATUS_INPUT_NAME ); ?>" value="<?php echo esc_attr( AMP_Post_Meta_Box::ENABLED_STATUS ); ?>" <?php checked( AMP_Post_Meta_Box::ENABLED_STATUS, $status ); ?>>
+				<input id="amp-status-enabled" type="radio" name="<?php echo esc_attr( PostAMPStatus::STATUS_INPUT_NAME ); ?>" value="<?php echo esc_attr( PostAMPStatus::ENABLED_STATUS ); ?>" <?php checked( PostAMPStatus::ENABLED_STATUS, $status ); ?>>
 				<label for="amp-status-enabled" class="selectit"><?php echo esc_html( $labels['enabled'] ); ?></label>
 				<br />
-				<input id="amp-status-disabled" type="radio" name="<?php echo esc_attr( AMP_Post_Meta_Box::STATUS_INPUT_NAME ); ?>" value="<?php echo esc_attr( AMP_Post_Meta_Box::DISABLED_STATUS ); ?>" <?php checked( AMP_Post_Meta_Box::DISABLED_STATUS, $status ); ?>>
+				<input id="amp-status-disabled" type="radio" name="<?php echo esc_attr( PostAMPStatus::STATUS_INPUT_NAME ); ?>" value="<?php echo esc_attr( PostAMPStatus::DISABLED_STATUS ); ?>" <?php checked( PostAMPStatus::DISABLED_STATUS, $status ); ?>>
 				<label for="amp-status-disabled" class="selectit"><?php echo esc_html( $labels['disabled'] ); ?></label>
 				<br />
-				<?php wp_nonce_field( AMP_Post_Meta_Box::NONCE_ACTION, AMP_Post_Meta_Box::NONCE_NAME ); ?>
+				<?php wp_nonce_field( PostAMPStatus::NONCE_ACTION, PostAMPStatus::NONCE_NAME ); ?>
 			</fieldset>
 		<?php else : ?>
 			<div class="inline notice notice-info notice-alt">

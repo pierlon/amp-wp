@@ -1,6 +1,6 @@
 <?php
 /**
- * Tests for AMP_Post_Meta_Box.
+ * Tests for ClassicEditor.
  *
  * @package AMP
  */
@@ -10,17 +10,17 @@ use AmpProject\AmpWP\Tests\Helpers\AssertContainsCompatibility;
 use AmpProject\AmpWP\Tests\Helpers\AssertRestApiField;
 
 /**
- * Tests for AMP_Post_Meta_Box.
+ * Tests for ClassicEditor.
  */
-class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
+class Test_ClassicEditor extends WP_UnitTestCase {
 
 	use AssertRestApiField;
 	use AssertContainsCompatibility;
 
 	/**
-	 * Instance of AMP_Post_Meta_Box
+	 * Instance of ClassicEditor
 	 *
-	 * @var AMP_Post_Meta_Box
+	 * @var ClassicEditor
 	 */
 	public $instance;
 
@@ -34,7 +34,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 		global $wp_scripts, $wp_styles;
 		$wp_scripts     = null;
 		$wp_styles      = null;
-		$this->instance = new AMP_Post_Meta_Box();
+		$this->instance = new ClassicEditor();
 	}
 
 	/**
@@ -67,17 +67,17 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test enqueue_admin_assets.
 	 *
-	 * @see AMP_Post_Meta_Box::enqueue_admin_assets()
+	 * @see ClassicEditor::enqueue_admin_assets()
 	 */
 	public function test_enqueue_admin_assets() {
 		// Test enqueue outside of a post with AMP support.
-		$this->assertFalse( wp_style_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
-		$this->assertFalse( wp_script_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
+		$this->assertFalse( wp_style_is( ClassicEditor::ASSETS_HANDLE ) );
+		$this->assertFalse( wp_script_is( ClassicEditor::ASSETS_HANDLE ) );
 
 		$this->instance->enqueue_admin_assets( 'foo-bar.php' );
 
-		$this->assertFalse( wp_style_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
-		$this->assertFalse( wp_script_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
+		$this->assertFalse( wp_style_is( ClassicEditor::ASSETS_HANDLE ) );
+		$this->assertFalse( wp_script_is( ClassicEditor::ASSETS_HANDLE ) );
 
 		// Test enqueue on a post with AMP support.
 		$post            = self::factory()->post->create_and_get();
@@ -87,16 +87,16 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 		get_current_screen()->is_block_editor = true;
 		$this->instance->enqueue_admin_assets();
 
-		$this->assertFalse( wp_style_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
-		$this->assertFalse( wp_script_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
+		$this->assertFalse( wp_style_is( ClassicEditor::ASSETS_HANDLE ) );
+		$this->assertFalse( wp_script_is( ClassicEditor::ASSETS_HANDLE ) );
 
 		set_current_screen( 'post.php' );
 		get_current_screen()->is_block_editor = false;
 		$this->instance->enqueue_admin_assets();
 
-		$this->assertTrue( wp_style_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
-		$this->assertTrue( wp_script_is( AMP_Post_Meta_Box::ASSETS_HANDLE ) );
-		$script_data = wp_scripts()->get_data( AMP_Post_Meta_Box::ASSETS_HANDLE, 'after' );
+		$this->assertTrue( wp_style_is( ClassicEditor::ASSETS_HANDLE ) );
+		$this->assertTrue( wp_script_is( ClassicEditor::ASSETS_HANDLE ) );
+		$script_data = wp_scripts()->get_data( ClassicEditor::ASSETS_HANDLE, 'after' );
 
 		if ( empty( $script_data ) ) {
 			$this->markTestIncomplete( 'Script data could not be found.' );
@@ -110,7 +110,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test enqueue_block_assets.
 	 *
-	 * @covers AMP_Post_Meta_Box::enqueue_block_assets()
+	 * @covers ClassicEditor::enqueue_block_assets()
 	 */
 	public function test_enqueue_block_assets() {
 		if ( ! function_exists( 'register_block_type' ) ) {
@@ -128,14 +128,14 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 			]
 		);
 		$this->instance->enqueue_block_assets();
-		$this->assertFalse( wp_script_is( AMP_Post_Meta_Box::BLOCK_ASSET_HANDLE ) );
+		$this->assertFalse( wp_script_is( ClassicEditor::BLOCK_ASSET_HANDLE ) );
 
 		// If a post type has AMP enabled, the script should be enqueued.
 		$GLOBALS['post'] = self::factory()->post->create_and_get();
 		$this->instance->enqueue_block_assets();
-		$this->assertTrue( wp_script_is( AMP_Post_Meta_Box::BLOCK_ASSET_HANDLE ) );
+		$this->assertTrue( wp_script_is( ClassicEditor::BLOCK_ASSET_HANDLE ) );
 
-		$block_script = wp_scripts()->registered[ AMP_Post_Meta_Box::BLOCK_ASSET_HANDLE ];
+		$block_script = wp_scripts()->registered[ ClassicEditor::BLOCK_ASSET_HANDLE ];
 		$this->assertEqualSets(
 			[
 				'lodash',
@@ -156,8 +156,8 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 			],
 			$block_script->deps
 		);
-		$this->assertEquals( AMP_Post_Meta_Box::BLOCK_ASSET_HANDLE, $block_script->handle );
-		$this->assertEquals( amp_get_asset_url( 'js/' . AMP_Post_Meta_Box::BLOCK_ASSET_HANDLE . '.js' ), $block_script->src );
+		$this->assertEquals( ClassicEditor::BLOCK_ASSET_HANDLE, $block_script->handle );
+		$this->assertEquals( amp_get_asset_url( 'js/' . ClassicEditor::BLOCK_ASSET_HANDLE . '.js' ), $block_script->src );
 
 		$this->assertContains( 'ampBlockEditor', $block_script->extra['data'] );
 		$expected_localized_values = [
@@ -236,7 +236,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test get_status_and_errors.
 	 *
-	 * @see AMP_Post_Meta_Box::get_status_and_errors()
+	 * @see ClassicEditor::get_status_and_errors()
 	 */
 	public function test_get_status_and_errors() {
 		AMP_Options_Manager::update_option( Option::ALL_TEMPLATES_SUPPORTED, false );
@@ -288,7 +288,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test get_error_messages.
 	 *
-	 * @see AMP_Post_Meta_Box::get_error_messages()
+	 * @see ClassicEditor::get_error_messages()
 	 */
 	public function test_get_error_messages() {
 		$messages = $this->instance->get_error_messages( [ 'template_unsupported' ] );
@@ -316,12 +316,12 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test save_amp_status.
 	 *
-	 * @covers AMP_Post_Meta_Box::save_amp_status()
+	 * @covers ClassicEditor::save_amp_status()
 	 */
 	public function test_save_amp_status() {
 		// Test failure.
 		$post_id = self::factory()->post->create();
-		$this->assertEmpty( get_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) );
+		$this->assertEmpty( get_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY, true ) );
 
 		// Setup for success.
 		wp_set_current_user(
@@ -331,42 +331,42 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 				]
 			)
 		);
-		$_POST[ AMP_Post_Meta_Box::NONCE_NAME ]        = wp_create_nonce( AMP_Post_Meta_Box::NONCE_ACTION );
-		$_POST[ AMP_Post_Meta_Box::STATUS_INPUT_NAME ] = 'disabled';
+		$_POST[ ClassicEditor::NONCE_NAME ]        = wp_create_nonce( ClassicEditor::NONCE_ACTION );
+		$_POST[ ClassicEditor::STATUS_INPUT_NAME ] = 'disabled';
 
 		// Test revision bail.
 		$post_id = self::factory()->post->create();
-		delete_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY );
+		delete_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY );
 		wp_save_post_revision( $post_id );
-		$this->assertEmpty( get_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) );
+		$this->assertEmpty( get_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY, true ) );
 
 		// Test post update success to disable.
 		$post_id = self::factory()->post->create();
-		delete_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY );
+		delete_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY );
 		wp_update_post(
 			[
 				'ID'         => $post_id,
 				'post_title' => 'updated',
 			]
 		);
-		$this->assertTrue( (bool) get_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) );
+		$this->assertTrue( (bool) get_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY, true ) );
 
 		// Test post update success to enable.
-		$_POST[ AMP_Post_Meta_Box::STATUS_INPUT_NAME ] = 'enabled';
-		delete_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY );
+		$_POST[ ClassicEditor::STATUS_INPUT_NAME ] = 'enabled';
+		delete_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY );
 		wp_update_post(
 			[
 				'ID'         => $post_id,
 				'post_title' => 'updated',
 			]
 		);
-		$this->assertEquals( AMP_Post_Meta_Box::ENABLED_STATUS, get_post_meta( $post_id, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) );
+		$this->assertEquals( PostAMPStatus::ENABLED_STATUS, get_post_meta( $post_id, PostAMPStatus::STATUS_POST_META_KEY, true ) );
 	}
 
 	/**
 	 * Test preview_post_link.
 	 *
-	 * @covers AMP_Post_Meta_Box::preview_post_link()
+	 * @covers ClassicEditor::preview_post_link()
 	 */
 	public function test_preview_post_link() {
 		$link = 'https://foo.bar';
@@ -391,7 +391,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	 * Test add_rest_api_fields.
 	 *
 	 * @dataProvider get_theme_support_data
-	 * @covers AMP_Post_Meta_Box::add_rest_api_fields()
+	 * @covers ClassicEditor::add_rest_api_fields()
 	 *
 	 * @param string $theme_feature Theme feature being added.
 	 * @param array  $support_args Theme support arguments.
@@ -401,7 +401,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 		$this->instance->add_rest_api_fields();
 		$this->assertRestApiFieldPresent(
 			AMP_Post_Type_Support::get_post_types_for_rest_api(),
-			AMP_Post_Meta_Box::REST_ATTRIBUTE_NAME,
+			ClassicEditor::REST_FIELD_NAME_AMP_ENABLED,
 			[
 				'get_callback'    => [ $this->instance, 'get_amp_enabled_rest_field' ],
 				'update_callback' => [ $this->instance, 'update_amp_enabled_rest_field' ],
@@ -416,7 +416,7 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test get_amp_enabled_rest_field.
 	 *
-	 * @covers AMP_Post_Meta_Box::get_amp_enabled_rest_field()
+	 * @covers ClassicEditor::get_amp_enabled_rest_field()
 	 */
 	public function test_get_amp_enabled_rest_field() {
 		AMP_Options_Manager::update_option( Option::ALL_TEMPLATES_SUPPORTED, false );
@@ -439,14 +439,14 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 
 		// AMP status should be enabled if the `amp_status` post meta equals 'enabled'.
 		$id = self::factory()->post->create();
-		add_metadata( 'post', $id, AMP_Post_Meta_Box::STATUS_POST_META_KEY, AMP_Post_Meta_Box::ENABLED_STATUS );
+		add_metadata( 'post', $id, PostAMPStatus::STATUS_POST_META_KEY, PostAMPStatus::ENABLED_STATUS );
 		$this->assertTrue(
 			$this->instance->get_amp_enabled_rest_field( compact( 'id' ) )
 		);
 
 		// AMP status should be disabled if the `amp_status` post meta equals 'disabled'.
 		$id = self::factory()->post->create();
-		add_metadata( 'post', $id, AMP_Post_Meta_Box::STATUS_POST_META_KEY, AMP_Post_Meta_Box::DISABLED_STATUS );
+		add_metadata( 'post', $id, PostAMPStatus::STATUS_POST_META_KEY, PostAMPStatus::DISABLED_STATUS );
 		$this->assertFalse(
 			$this->instance->get_amp_enabled_rest_field( compact( 'id' ) )
 		);
@@ -455,25 +455,25 @@ class Test_AMP_Post_Meta_Box extends WP_UnitTestCase {
 	/**
 	 * Test update_amp_enabled_rest_field.
 	 *
-	 * @covers AMP_Post_Meta_Box::update_amp_enabled_rest_field()
+	 * @covers ClassicEditor::update_amp_enabled_rest_field()
 	 */
 	public function test_update_amp_enabled_rest_field() {
 		// User should not be able to update AMP status if they do not have the `edit_post` capability.
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'subscriber' ] ) );
 		$post = self::factory()->post->create_and_get();
-		add_metadata( 'post', $post->ID, AMP_Post_Meta_Box::STATUS_POST_META_KEY, AMP_Post_Meta_Box::ENABLED_STATUS );
+		add_metadata( 'post', $post->ID, PostAMPStatus::STATUS_POST_META_KEY, PostAMPStatus::ENABLED_STATUS );
 		$result = $this->instance->update_amp_enabled_rest_field( false, $post );
 
-		$this->assertEquals( AMP_Post_Meta_Box::ENABLED_STATUS, get_post_meta( $post->ID, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) );
+		$this->assertEquals( PostAMPStatus::ENABLED_STATUS, get_post_meta( $post->ID, PostAMPStatus::STATUS_POST_META_KEY, true ) );
 		$this->assertInstanceOf( WP_Error::class, $result );
 		$this->assertEquals( 'rest_insufficient_permission', $result->get_error_code() );
 
 		// User should be able to update AMP status if they have the sufficient capabilities.
 		wp_set_current_user( self::factory()->user->create( [ 'role' => 'administrator' ] ) );
 		$post = self::factory()->post->create_and_get();
-		add_metadata( 'post', $post->ID, AMP_Post_Meta_Box::STATUS_POST_META_KEY, AMP_Post_Meta_Box::ENABLED_STATUS );
+		add_metadata( 'post', $post->ID, PostAMPStatus::STATUS_POST_META_KEY, PostAMPStatus::ENABLED_STATUS );
 		$this->assertNull( $this->instance->update_amp_enabled_rest_field( false, $post ) );
 
-		$this->assertEquals( AMP_Post_Meta_Box::DISABLED_STATUS, get_post_meta( $post->ID, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) );
+		$this->assertEquals( PostAMPStatus::DISABLED_STATUS, get_post_meta( $post->ID, PostAMPStatus::STATUS_POST_META_KEY, true ) );
 	}
 }

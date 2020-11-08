@@ -1,8 +1,8 @@
 <?php
 /**
- * Class PluginSidebar.
+ * Class BlockEditor.
  *
- * Functionality related to the editor plugin sidebar.
+ * Functionality related to the editor.
  *
  * @since 2.1
  *
@@ -27,14 +27,14 @@ use AmpProject\AmpWP\Script;
  *
  * @internal
  */
-final class PluginSidebar implements Conditional, Delayed, Service, Registerable {
+final class BlockEditor implements Conditional, Delayed, Service, Registerable {
 
 	/**
 	 * The name of the REST API field with the AMP validation results.
 	 *
 	 * @var string
 	 */
-	const VALIDITY_REST_FIELD_NAME = 'amp_validity';
+	const REST_FIELD_NAME_VALIDITY = 'amp_validity';
 
 	/**
 	 * EditorSupport instance.
@@ -51,6 +51,13 @@ final class PluginSidebar implements Conditional, Delayed, Service, Registerable
 	private $dev_tools_user_access;
 
 	/**
+	 * PostAMPStatus instance.
+	 *
+	 * @var PostAMPStatus
+	 */
+	private $post_amp_status;
+
+	/**
 	 * Post IDs for posts that have been updated which need to be re-validated.
 	 *
 	 * Keys are post IDs and values are whether the post has been re-validated.
@@ -64,10 +71,12 @@ final class PluginSidebar implements Conditional, Delayed, Service, Registerable
 	 *
 	 * @param EditorSupport $editor_support EditorSupport instance.
 	 * @param UserAccess    $dev_tools_user_access UserAccess instance.
+	 * @param PostAMPStatus $post_amp_status PostAMPStatus instance.
 	 */
-	public function __construct( EditorSupport $editor_support, UserAccess $dev_tools_user_access ) {
+	public function __construct( EditorSupport $editor_support, UserAccess $dev_tools_user_access, PostAMPStatus $post_amp_status ) {
 		$this->editor_support        = $editor_support;
 		$this->dev_tools_user_access = $dev_tools_user_access;
+		$this->post_amp_status       = $post_amp_status;
 	}
 
 	/**
@@ -105,9 +114,9 @@ final class PluginSidebar implements Conditional, Delayed, Service, Registerable
 			return;
 		}
 
-		$script = new Script( 'amp-plugin-sidebar', true );
-		$script->enqueue();
-		$script->add_data(
+		$sidebar_script = new Script( 'amp-plugin-sidebar', [ Script::FLAG_NAME_HAS_STYLE ] );
+		$sidebar_script->enqueue();
+		$sidebar_script->add_data(
 			'ampPluginSidebar',
 			[
 				'HTML_ATTRIBUTE_ERROR_TYPE'  => AMP_Validation_Error_Taxonomy::HTML_ATTRIBUTE_ERROR_TYPE,
@@ -117,6 +126,20 @@ final class PluginSidebar implements Conditional, Delayed, Service, Registerable
 				'isSanitizationAutoAccepted' => AMP_Validation_Manager::is_sanitization_auto_accepted(),
 			]
 		);
+
+		$status_and_errors = $this->post_amp_status->get_status_and_errors( get_post() );
+		$block_script      = new Script( 'amp-block-editor', [ Script::FLAG_NAME_HAS_STYLE ] );
+		$block_script->enqueue();
+		$block_script->add_data(
+			'ampBlockEditor',
+			[
+				'ampSlug'         => amp_get_slug(),
+				'errorMessages'   => $this->post_amp_status->get_error_messages( $status_and_errors['errors'] ),
+				'hasThemeSupport' => ! amp_is_legacy(),
+				'isStandardMode'  => amp_is_canonical(),
+			]
+		);
+
 	}
 
 	/**
@@ -125,13 +148,13 @@ final class PluginSidebar implements Conditional, Delayed, Service, Registerable
 	public function register_rest_fields() {
 		register_rest_field(
 			AMP_Post_Type_Support::get_post_types_for_rest_api(),
-			self::VALIDITY_REST_FIELD_NAME,
+			self::REST_FIELD_NAME_VALIDITY,
 			[
 				'get_callback' => [ $this, 'get_amp_validity_rest_field' ],
 				'schema'       => [
 					'description' => __( 'AMP validity status', 'amp' ),
 					'type'        => 'object',
-					'context'     => 'edit',
+					'context'     => [ 'edit' ],
 				],
 			]
 		);

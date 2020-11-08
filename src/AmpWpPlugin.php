@@ -56,13 +56,15 @@ final class AmpWpPlugin extends ServiceBasedPlugin {
 	 */
 	const SERVICES = [
 		'admin.analytics_menu'              => Admin\AnalyticsOptionsSubmenu::class,
+		'admin.block_editor'                => Admin\BlockEditor::class,
+		'admin.classic_editor'              => Admin\ClassicEditor::class,
 		'admin.editor_support'              => Admin\EditorSupport::class,
 		'admin.google_fonts'                => Admin\GoogleFonts::class,
 		'admin.onboarding_menu'             => Admin\OnboardingWizardSubmenu::class,
 		'admin.onboarding_wizard'           => Admin\OnboardingWizardSubmenuPage::class,
 		'admin.options_menu'                => Admin\OptionsMenu::class,
-		'admin.plugin_sidebar'              => Admin\PluginSidebar::class,
 		'admin.polyfills'                   => Admin\Polyfills::class,
+		'admin.post_amp_status'             => Admin\PostAMPStatus::class,
 		'amp_slug_customization_watcher'    => AmpSlugCustomizationWatcher::class,
 		'css_transient_cache.ajax_handler'  => Admin\ReenableCssTransientCachingAjaxAction::class,
 		'css_transient_cache.monitor'       => BackgroundTask\MonitorCssTransientCaching::class,

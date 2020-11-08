@@ -17,7 +17,7 @@ import {
 	VALIDATION_ERROR_ACK_REJECTED_STATUS,
 	VALIDATION_ERROR_NEW_REJECTED_STATUS,
 	AMP_VALIDATION_ERROR_NOTICE_ID,
-	AMP_VALIDITY_REST_FIELD_NAME,
+	AMP_REST_FIELD_NAME_VALIDITY,
 } from '../constants';
 
 export const removeValidationErrorNotice = () => {
@@ -62,7 +62,7 @@ export const updateValidationErrors = () => {
 	 * @param {Object[]} ampValidity.results     AMP validation results.
 	 * @param {string}   ampValidity.review_link URL for reviewing validation error details.
 	 */
-	const ampValidity = currentPost[ AMP_VALIDITY_REST_FIELD_NAME ] || {};
+	const ampValidity = currentPost[ AMP_REST_FIELD_NAME_VALIDITY ] || {};
 
 	if ( ! ampValidity.results || ! ampValidity.review_link ) {
 		return;

@@ -562,7 +562,7 @@ class Test_AMP_Validation_Manager extends DependencyInjectedTestCase {
 		AMP_Validation_Manager::add_rest_api_fields();
 		$this->assertRestApiFieldPresent(
 			AMP_Post_Type_Support::get_post_types_for_rest_api(),
-			AMP_Validation_Manager::VALIDITY_REST_FIELD_NAME,
+			AMP_Validation_Manager::REST_FIELD_NAME_VALIDITY,
 			[
 				'get_callback' => [ AMP_Validation_Manager::class, 'get_amp_validity_rest_field' ],
 				'schema'       => [
@@ -577,7 +577,7 @@ class Test_AMP_Validation_Manager extends DependencyInjectedTestCase {
 		AMP_Validation_Manager::add_rest_api_fields();
 		$this->assertRestApiFieldPresent(
 			AMP_Post_Type_Support::get_post_types_for_rest_api(),
-			AMP_Validation_Manager::VALIDITY_REST_FIELD_NAME,
+			AMP_Validation_Manager::REST_FIELD_NAME_VALIDITY,
 			[
 				'get_callback' => [ AMP_Validation_Manager::class, 'get_amp_validity_rest_field' ],
 				'schema'       => [
