@@ -13,9 +13,9 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { MODULE_KEY } from '../../block-validation/store';
+import { MODULE_KEY } from './store';
 import './style.css';
-import { useBackendData } from './use-backend-data';
+import { useInlineData } from './use-backend-data';
 
 /**
  * Component rendering an icon representing JS, CSS, or HTML.
@@ -24,7 +24,7 @@ import { useBackendData } from './use-backend-data';
  * @param {string} props.type The error type.
  */
 function ErrorTypeIcon( { type } ) {
-	const { CSS_ERROR_TYPE, HTML_ATTRIBUTE_ERROR_TYPE, HTML_ELEMENT_ERROR_TYPE, JS_ERROR_TYPE } = useBackendData();
+	const { CSS_ERROR_TYPE, HTML_ATTRIBUTE_ERROR_TYPE, HTML_ELEMENT_ERROR_TYPE, JS_ERROR_TYPE } = useInlineData();
 
 	switch ( type ) {
 		case HTML_ATTRIBUTE_ERROR_TYPE:

@@ -11,8 +11,10 @@ import { select, subscribe } from '@wordpress/data';
  */
 import { Sidebar } from './sidebar';
 import { ToolbarIcon, MoreMenuIcon } from './icon';
-
 import './style.css';
+import './store';
+import '../block-editor/store';
+import { updateValidationErrors, maybeResetValidationErrors } from './helpers';
 
 const name = 'amp-sidebar';
 const title = __( 'AMP for WordPress', 'amp' );
@@ -39,34 +41,11 @@ function AMPPluginSidebar( ) {
 		</>
 	);
 }
-
-const icon = MoreMenuIcon;
-const render = AMPPluginSidebar;
-
-registerPlugin( name, { icon, render } );
-
-/**
- * Validates blocks for AMP compatibility.
- *
- * This uses the REST API response from saving a page to find validation errors.
- * If one exists for a block, it display it inline with a Notice component.
- */
-
-/**
- * WordPress dependencies
- */
-
-/**
- * Internal dependencies
- */
-import { updateValidationErrors, maybeResetValidationErrors } from './helpers';
-import './store';
-import '../block-editor/store';
-
-const { isEditedPostDirty } = select( 'core/editor' );
+registerPlugin( name, { icon: MoreMenuIcon, render: AMPPluginSidebar } );
 
 subscribe( () => {
-	const isAMPEnabled = select( 'core/editor' ).getCurrentPost()?.amp__enabled;
+	const { isEditedPostDirty, getCurrentPost } = select( 'core/editor' );
+	const isAMPEnabled = getCurrentPost()?.amp_enabled;
 
 	try {
 		if ( ! isEditedPostDirty() ) {
@@ -78,4 +57,3 @@ subscribe( () => {
 		}
 	} catch ( err ) {}
 } );
-

@@ -6,7 +6,7 @@ import { useSelect } from '@wordpress/data';
 /**
  * Internal dependencies
  */
-import { MODULE_KEY } from '../../block-validation/store';
+import { MODULE_KEY } from './store';
 
 function IconSVG() {
 	return (
