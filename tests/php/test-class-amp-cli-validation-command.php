@@ -5,6 +5,7 @@
  * @package AMP
  */
 
+use AmpProject\AmpWP\Editor\PostAMPStatus;
 use AmpProject\AmpWP\Option;
 use AmpProject\AmpWP\Tests\Helpers\AssertContainsCompatibility;
 use AmpProject\AmpWP\Tests\Helpers\PrivateAccess;
@@ -109,15 +110,15 @@ class Test_AMP_CLI_Validation_Command extends \WP_UnitTestCase {
 		$first_id = $ids[0];
 		update_post_meta(
 			$first_id,
-			AMP_Post_Meta_Box::STATUS_POST_META_KEY,
-			AMP_Post_Meta_Box::DISABLED_STATUS
+			PostAMPStatus::STATUS_POST_META_KEY,
+			PostAMPStatus::DISABLED_STATUS
 		);
 		$this->assertEquals( [], $this->call_private_method( $this->validation, 'get_posts_that_support_amp', [ [ $first_id ] ] ) );
 
 		update_post_meta(
 			$first_id,
-			AMP_Post_Meta_Box::STATUS_POST_META_KEY,
-			AMP_Post_Meta_Box::ENABLED_STATUS
+			PostAMPStatus::STATUS_POST_META_KEY,
+			PostAMPStatus::ENABLED_STATUS
 		);
 
 		// When the second $force_count_all_urls argument is true, all of the newly-created posts should be part of the URL count.

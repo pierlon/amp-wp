@@ -69,7 +69,7 @@ function amp_admin_get_preview_permalink() {
 			'post_type'        => $supported_post_types,
 			'posts_per_page'   => 1,
 			'fields'           => 'ids',
-			// @todo This should eventually do a meta_query to make sure there are none that have AMP_Post_Meta_Box::STATUS_POST_META_KEY = DISABLED_STATUS.
+			// @todo This should eventually do a meta_query to make sure there are none that have PostAMPStatus::STATUS_POST_META_KEY = DISABLED_STATUS.
 		]
 	);
 
@@ -180,9 +180,6 @@ function amp_editor_core_blocks() {
 function amp_bootstrap_admin() {
 	$admin_pointers = new AMP_Admin_Pointers();
 	$admin_pointers->init();
-
-	$post_meta_box = new AMP_Post_Meta_Box();
-	$post_meta_box->init();
 }
 
 /**

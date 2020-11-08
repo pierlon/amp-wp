@@ -6,6 +6,7 @@
  * @since 0.6
  */
 
+use AmpProject\AmpWP\Editor\PostAMPStatus;
 use AmpProject\AmpWP\Option;
 
 /**
@@ -141,9 +142,9 @@ class AMP_Post_Type_Support {
 			$errors[] = 'skip-post';
 		}
 
-		$status = get_post_meta( $post->ID, AMP_Post_Meta_Box::STATUS_POST_META_KEY, true );
+		$status = get_post_meta( $post->ID, PostAMPStatus::STATUS_POST_META_KEY, true );
 		if ( $status ) {
-			if ( AMP_Post_Meta_Box::DISABLED_STATUS === $status ) {
+			if ( PostAMPStatus::DISABLED_STATUS === $status ) {
 				$errors[] = 'post-status-disabled';
 			}
 		} else {

@@ -9,6 +9,7 @@ namespace AmpProject\AmpWP;
 
 use AmpProject\AmpWP\Admin;
 use AmpProject\AmpWP\BackgroundTask;
+use AmpProject\AmpWP\Editor;
 use AmpProject\AmpWP\Infrastructure\ServiceBasedPlugin;
 use AmpProject\AmpWP\Instrumentation;
 
@@ -69,6 +70,10 @@ final class AmpWpPlugin extends ServiceBasedPlugin {
 		'dev_tools.file_reflection'         => DevTools\FileReflection::class,
 		'dev_tools.likely_culprit_detector' => DevTools\LikelyCulpritDetector::class,
 		'dev_tools.user_access'             => DevTools\UserAccess::class,
+		'editor.block_editor'               => Editor\BlockEditor::class,
+		'editor.classic_editor'             => Editor\ClassicEditor::class,
+		'editor.editor_support'             => Editor\EditorSupport::class,
+		'editor.post_amp_status'            => Editor\PostAMPStatus::class,
 		'extra_theme_and_plugin_headers'    => ExtraThemeAndPluginHeaders::class,
 		'mobile_redirection'                => MobileRedirection::class,
 		'obsolete_block_attribute_remover'  => ObsoleteBlockAttributeRemover::class,

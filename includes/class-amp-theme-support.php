@@ -6,7 +6,7 @@
  */
 
 use AmpProject\Amp;
-use AmpProject\AmpWP\DevTools\ErrorPage;
+use AmpProject\AmpWP\Editor\PostAMPStatus;
 use AmpProject\AmpWP\ExtraThemeAndPluginHeaders;
 use AmpProject\AmpWP\Option;
 use AmpProject\AmpWP\QueryVar;
@@ -21,7 +21,6 @@ use AmpProject\Optimizer;
 use AmpProject\RemoteRequest\FallbackRemoteGetRequest;
 use AmpProject\RemoteRequest\FilesystemRemoteGetRequest;
 use AmpProject\AmpWP\RemoteRequest\WpHttpRemoteGetRequest;
-use AmpProject\RequestDestination;
 use AmpProject\Tag;
 
 /**
@@ -785,7 +784,7 @@ class AMP_Theme_Support {
 				'label'  => __( 'Homepage', 'amp' ),
 				'parent' => 'is_singular',
 			];
-			if ( AMP_Post_Meta_Box::DISABLED_STATUS === get_post_meta( get_option( 'page_on_front' ), AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) ) {
+			if ( PostAMPStatus::DISABLED_STATUS === get_post_meta( get_option( 'page_on_front' ), PostAMPStatus::STATUS_POST_META_KEY, true ) ) {
 				/* translators: %s: the URL to the edit post screen. */
 				$templates['is_front_page']['description'] = sprintf( __( 'Currently disabled at the <a href="%s">page level</a>.', 'amp' ), esc_url( get_edit_post_link( get_option( 'page_on_front' ) ) ) );
 			}
@@ -794,7 +793,7 @@ class AMP_Theme_Support {
 			$templates['is_home'] = [
 				'label' => __( 'Blog', 'amp' ),
 			];
-			if ( AMP_Post_Meta_Box::DISABLED_STATUS === get_post_meta( get_option( 'page_for_posts' ), AMP_Post_Meta_Box::STATUS_POST_META_KEY, true ) ) {
+			if ( PostAMPStatus::DISABLED_STATUS === get_post_meta( get_option( 'page_for_posts' ), PostAMPStatus::STATUS_POST_META_KEY, true ) ) {
 				/* translators: %s: the URL to the edit post screen. */
 				$templates['is_home']['description'] = sprintf( __( 'Currently disabled at the <a href="%s">page level</a>.', 'amp' ), esc_url( get_edit_post_link( get_option( 'page_for_posts' ) ) ) );
 			}
@@ -1668,7 +1667,7 @@ class AMP_Theme_Support {
 			Tag::LINK,
 			[
 				Attribute::REL  => Attribute::REL_PRELOAD,
-				Attribute::AS_  => RequestDestination::SCRIPT,
+				'as'            => Tag::SCRIPT,
 				Attribute::HREF => $runtime_src,
 			]
 		);
@@ -1687,7 +1686,7 @@ class AMP_Theme_Support {
 				Tag::LINK,
 				[
 					Attribute::REL  => Attribute::REL_PRELOAD,
-					Attribute::AS_  => RequestDestination::SCRIPT,
+					'as'            => Tag::SCRIPT,
 					Attribute::HREF => $amp_scripts[ $script_handle ]->getAttribute( Attribute::SRC ),
 				]
 			);
@@ -2268,8 +2267,6 @@ class AMP_Theme_Support {
 					Optimizer\Transformer\TransformedIdentifier::class,
 				]
 			);
-		} else {
-			array_unshift( $transformers, Transformer\DetermineHeroImages::class );
 		}
 
 		array_unshift( $transformers, Transformer\AmpSchemaOrgMetadata::class );
@@ -2284,12 +2281,7 @@ class AMP_Theme_Support {
 		$configuration = apply_filters(
 			'amp_optimizer_config',
 			array_merge(
-				[
-					Optimizer\Configuration::KEY_TRANSFORMERS => $transformers,
-					Optimizer\Transformer\PreloadHeroImage::class => [
-						Optimizer\Configuration\PreloadHeroImageConfiguration::INLINE_STYLE_BACKUP_ATTRIBUTE => 'data-amp-original-style',
-					],
-				],
+				[ Optimizer\Configuration::KEY_TRANSFORMERS => $transformers ],
 				$args
 			)
 		);
