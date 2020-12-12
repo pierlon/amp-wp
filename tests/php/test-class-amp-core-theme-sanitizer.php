@@ -127,29 +127,6 @@ class AMP_Core_Theme_Sanitizer_Test extends WP_UnitTestCase {
 		$this->assertEquals( $expected, $actual );
 	}
 
-	/**
-	 * Test get_supported_themes().
-	 *
-	 * @covers ::get_supported_themes()
-	 */
-	public function test_get_supported_themes() {
-		$supported_themes = [
-			'twentytwentyone',
-			'twentytwenty',
-			'twentynineteen',
-			'twentyseventeen',
-			'twentysixteen',
-			'twentyfifteen',
-			'twentyfourteen',
-			'twentythirteen',
-			'twentytwelve',
-			'twentyeleven',
-			'twentyten',
-		];
-
-		$this->assertEquals( $supported_themes, AMP_Core_Theme_Sanitizer::get_supported_themes() );
-	}
-
 	/** @covers ::dequeue_scripts() */
 	public function test_dequeue_scripts() {
 		$handle = 'foo';
