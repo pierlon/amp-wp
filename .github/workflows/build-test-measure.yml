@@ -403,6 +403,10 @@ jobs:
       - name: Copy plugin to WP plugins directory
         run: cp -r "$PWD" "$WP_CORE_DIR/src/wp-content/plugins/amp"
 
+      - name: Setup tmate session
+        if: ${{ matrix.php == '7.0' }}
+        uses: mxschmitt/action-tmate@v3
+
       - name: Run tests
         if: ${{ matrix.coverage == false }}
         run: vendor/bin/phpunit
