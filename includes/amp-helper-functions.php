@@ -334,6 +334,7 @@ function amp_is_available() {
 
 	// Short-circuit for cron, CLI, admin requests or requests to non-frontend pages.
 	if ( wp_doing_cron() || ( defined( 'WP_CLI' ) && WP_CLI ) || is_admin() || in_array( $pagenow, [ 'wp-login.php', 'wp-signup.php', 'wp-activate.php', 'repair.php' ], true ) ) {
+		error_log('1');
 		return false;
 	}
 
@@ -416,6 +417,7 @@ function amp_is_available() {
 	if ( ! did_action( 'parse_request' ) ) {
 		$warn();
 	} elseif ( defined( 'REST_REQUEST' ) && REST_REQUEST ) {
+		error_log('2');
 		return false;
 	}
 
@@ -428,6 +430,7 @@ function amp_is_available() {
 	// Note this is no longer strictly required because AMP_Theme_Support::prepare_response() will abort for non-HTML responses.
 	// But it is still good to do so because it avoids needlessly output-buffering the response.
 	if ( class_exists( 'WP_Service_Workers' ) && $wp_query instanceof WP_Query && defined( 'WP_Service_Workers::QUERY_VAR' ) && $wp_query->get( WP_Service_Workers::QUERY_VAR ) ) {
+		error_log('3');
 		return false;
 	}
 
@@ -450,6 +453,7 @@ function amp_is_available() {
 			( method_exists( $wp_query, 'is_favicon' ) && $wp_query->is_favicon() )
 		)
 	) {
+		error_log('4');
 		return false;
 	}
 
@@ -477,6 +481,7 @@ function amp_is_available() {
 		&&
 		( isset( $_GET[ QueryVar::NOAMP ] ) && QueryVar::NOAMP_AVAILABLE === $_GET[ QueryVar::NOAMP ] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 	) {
+		error_log('5');
 		return false;
 	}
 
@@ -496,6 +501,7 @@ function amp_is_available() {
 		$availability = AMP_Theme_Support::get_template_availability( $wp_query );
 
 		if ( ! $availability['supported'] ) {
+			error_log('6');
 			return false;
 		}
 
@@ -508,6 +514,7 @@ function amp_is_available() {
 				[ 'ignore_accepted' => true ]
 			);
 			if ( count( $validation_errors ) > 0 ) {
+				error_log('7');
 				return false;
 			}
 		}
@@ -518,6 +525,7 @@ function amp_is_available() {
 		amp_is_post_supported( $queried_object ) )
 	) {
 		// Abort if in legacy Reader mode and the post doesn't support AMP.
+		error_log('8');
 		return false;
 	}
 
