@@ -1,0 +1,108 @@
+name: Plugin Documentation
+
+on:
+  workflow_dispatch:
+
+env:
+  BRANCH_NAME: update/docs
+
+jobs:
+  generate_docs:
+    name: 'Generate documentation'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+
+      - name: Get Composer Cache Directory
+        id: composer-cache
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+      - name: Configure Composer cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-composer-
+
+      - name: Install Composer dependencies
+        run: composer install --prefer-dist --optimize-autoloader --no-progress --no-interaction
+
+      - name: Setup WordPress
+        run: |
+          docker-compose up -d
+
+          echo "Getting env vars"
+          MYSQL_PWD=$(docker-compose exec -T mysql printenv MYSQL_ROOT_PASSWORD)
+          WORDPRESS_DB_NAME=$(docker-compose exec -T wordpress printenv WORDPRESS_DB_NAME)
+          HOST_PORT=$(docker-compose port wordpress 80 | awk -F : '{printf $2}')
+
+          # Wait until the database container is ready.
+          echo -en "Waiting for database connection..."
+          until $(docker-compose exec -T wordpress bash -c "echo -n > /dev/tcp/mysql/3306" >/dev/null 2>&1); do
+              echo -n '.'
+              sleep 5
+          done
+          echo ''
+
+          echo "Creating db"
+          docker-compose exec -T -e MYSQL_PWD="$MYSQL_PWD" mysql mysql -e "CREATE DATABASE IF NOT EXISTS $WORDPRESS_DB_NAME"
+
+          echo "Installing WP"
+          docker-compose exec -T cli wp core install --title="Docs" --admin_user=admin --admin_password=password --admin_email=test@test.com --skip-email --url=http://localhost:$HOST_PORT
+
+          echo "Activating AMP plugin"
+          touch ../../assets/js/amp-block-editor.js
+          docker-compose exec -T cli wp plugin activate amp
+        working-directory: bin/local-env
+
+      - name: Configure git user
+        run: |
+          git config user.email "pierregordon@protonmail.com"
+          git config user.name "Pierre Gordon"
+
+      - name: Check if remote branch exists
+        id: remote-branch
+        run: echo ::set-output name=exists::$([[ -z $(git ls-remote --heads origin ${{ env.BRANCH_NAME }}) ]] && echo "0" || echo "1")
+
+      - name: Create branch to base pull request on
+        if: steps.remote-branch.outputs.exists == 0
+        run: |
+          git checkout -b ${{ env.BRANCH_NAME }}
+
+      - name: Fetch existing branch to add commits to
+        if: steps.remote-branch.outputs.exists == 1
+        run: |
+          git checkout ${{ env.BRANCH_NAME }}
+          git merge --no-edit ${GITHUB_REF#refs/heads/}
+
+      - name: Generate plugin documentation
+        run: docker-compose exec -T -u $(id --user) cli wp amp docs generate
+        working-directory: bin/local-env
+
+      - name: Check if there are changes
+        id: changes
+        run: echo ::set-output name=changed::$([[ -z $(git status --porcelain) ]] && echo "0" || echo "1")
+
+      - name: Commit and push changes
+        if: steps.changes.outputs.changed == 1
+        run: |
+          git add --all .
+          git commit -m "Update documentation"
+          git push origin ${{ env.BRANCH_NAME }}
+
+      - name: Create pull request
+        if: steps.changes.outputs.changed == 1 && steps.remote-branch.outputs.exists == 0
+        run: |
+          git push -u origin ${{ env.BRANCH_NAME }}
+          gh pr create --base ${GITHUB_REF#refs/heads/} --title "Update documentation for `${GITHUB_REF#refs/heads/}` branch" --body "" --label Documentation
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
