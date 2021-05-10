@@ -779,7 +779,7 @@ function amp_is_request() {
 }
 
 /**
- * Determine whether the current response being served as AMP.
+ * Determine whether the current response being served as ⚡.
  *
  * This function cannot be called before the parse_query action because it needs to be able
  * to determine the queried object is able to be served as AMP. If 'amp' theme support is not
