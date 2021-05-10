@@ -5,7 +5,6 @@ on:
 
 env:
   BRANCH_NAME: update/docs
-  PR_NAME: Update documentation
 
 jobs:
   generate_docs:
@@ -14,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -65,8 +66,8 @@ jobs:
 
       - name: Configure git user
         run: |
-          git config --global user.email "pierregordon@protonmail.com"
-          git config --global user.name "Pierre Gordon"
+          git config user.email "pierregordon@protonmail.com"
+          git config user.name "Pierre Gordon"
 
       - name: Check if remote branch exists
         id: remote-branch
@@ -80,9 +81,8 @@ jobs:
       - name: Fetch existing branch to add commits to
         if: steps.remote-branch.outputs.exists == 1
         run: |
-          git fetch --all --prune
           git checkout ${{ env.BRANCH_NAME }}
-          git pull --no-rebase
+          git merge --no-edit ${GITHUB_REF#refs/heads/}
 
       - name: Generate plugin documentation
         run: docker-compose exec -T -u $(id --user) cli wp amp docs generate
@@ -96,13 +96,13 @@ jobs:
         if: steps.changes.outputs.changed == 1
         run: |
           git add --all .
-          git commit -m "Update documentation - $(date +'%Y-%m-%d')"
+          git commit -m "Update documentation"
           git push origin ${{ env.BRANCH_NAME }}
 
       - name: Create pull request
-        if: steps.changes.outputs.changed == 1
+        if: steps.changes.outputs.changed == 1 && steps.remote-branch.outputs.exists == 0
         run: |
           git push -u origin ${{ env.BRANCH_NAME }}
-          gh pr create --base ${GITHUB_REF#refs/heads/} --title "Update documentation" --body "" --label Documentation
+          gh pr create --base ${GITHUB_REF#refs/heads/} --title "Update documentation for `${GITHUB_REF#refs/heads/}` branch" --body "" --label Documentation
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
