@@ -11,7 +11,6 @@
             ]
         },
         "path": "back-compat\/back-compat.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "functions": [
             {
                 "name": "amp_backcompat_use_v03_templates",
@@ -72,7 +71,6 @@
             ]
         },
         "path": "includes\/validation\/class-amp-validation-error-taxonomy.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -208,7 +206,6 @@
             ]
         },
         "path": "includes\/validation\/class-amp-validation-manager.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -314,7 +311,6 @@
             ]
         },
         "path": "includes\/class-amp-post-type-support.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -439,7 +435,6 @@
             ]
         },
         "path": "includes\/admin\/functions.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "functions": [],
         "hooks": {
             "0": {
@@ -519,7 +514,6 @@
             ]
         },
         "path": "includes\/admin\/class-amp-post-meta-box.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -607,7 +601,6 @@
             ]
         },
         "path": "includes\/admin\/class-amp-template-customizer.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -776,7 +769,6 @@
             ]
         },
         "path": "includes\/settings\/class-amp-customizer-design-settings.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -832,7 +824,6 @@
             ]
         },
         "path": "includes\/settings\/class-amp-customizer-settings.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -876,7 +867,6 @@
             ]
         },
         "path": "includes\/embeds\/class-amp-base-embed-handler.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [
             {
                 "name": "AMP_Base_Embed_Handler",
@@ -1469,7 +1459,6 @@
             ]
         },
         "path": "includes\/deprecated.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -1950,7 +1939,6 @@
             ]
         },
         "path": "includes\/utils\/class-amp-dom-utils.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [
             {
                 "name": "AMP_DOM_Utils",
@@ -3310,7 +3298,6 @@
             ]
         },
         "path": "includes\/utils\/class-amp-image-dimension-extractor.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -3430,7 +3417,6 @@
             ]
         },
         "path": "includes\/templates\/class-amp-post-template.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -3644,7 +3630,6 @@
             ]
         },
         "path": "includes\/class-amp-theme-support.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": {
             "1": {
@@ -3715,7 +3700,6 @@
             ]
         },
         "path": "includes\/amp-helper-functions.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "constants": [
             {
                 "name": "AMP_QUERY_VAR",
@@ -5852,7 +5836,6 @@
             ]
         },
         "path": "includes\/amp-frontend-actions.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "uses": {
             "functions": [
                 {
@@ -5942,7 +5925,6 @@
             ]
         },
         "path": "includes\/class-amp-http.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -5979,7 +5961,6 @@
             ]
         },
         "path": "includes\/sanitizers\/class-amp-link-sanitizer.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -6046,7 +6027,6 @@
             ]
         },
         "path": "includes\/sanitizers\/class-amp-base-sanitizer.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [
             {
                 "name": "AMP_Base_Sanitizer",
@@ -8017,7 +7997,6 @@
             ]
         },
         "path": "src\/MobileRedirection.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": {
             "0": {
@@ -8169,7 +8148,6 @@
             ]
         },
         "path": "src\/Admin\/OptionsMenu.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -8229,7 +8207,6 @@
             ]
         },
         "path": "src\/Admin\/ReaderThemes.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "includes": [
             {
                 "name": "",
@@ -8291,7 +8268,6 @@
             ]
         },
         "path": "src\/Optimizer\/AmpWPConfiguration.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -8366,7 +8342,6 @@
             ]
         },
         "path": "src\/DevTools\/UserAccess.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -8419,7 +8394,6 @@
             ]
         },
         "path": "src\/PairedUrl.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [
             {
                 "name": "PairedUrl",
@@ -8886,7 +8860,6 @@
             ]
         },
         "path": "src\/PairedUrlStructure\/LegacyReaderUrlStructure.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -8985,7 +8958,6 @@
             ]
         },
         "path": "src\/PairedRouting.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -9029,7 +9001,6 @@
             ]
         },
         "path": "src\/Validation\/URLValidationCron.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": {
             "1": {
@@ -9077,7 +9048,6 @@
             ]
         },
         "path": "src\/Validation\/URLScanningContext.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -9121,7 +9091,6 @@
             ]
         },
         "path": "src\/BackgroundTask\/MonitorCssTransientCaching.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [],
         "hooks": [
             {
@@ -9192,7 +9161,6 @@
             ]
         },
         "path": "src\/PairedUrlStructure.php",
-        "root": "\/var\/www\/html\/wp-content\/plugins\/amp",
         "classes": [
             {
                 "name": "PairedUrlStructure",
