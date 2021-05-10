@@ -21,5 +21,5 @@
 * [`amp_remove_paired_endpoint`](amp_remove_paired_endpoint.md) - Remove the paired AMP endpoint from a given URL.
 * ~~[`amp_render`](amp_render.md) - Render AMP for queried post.~~
 * ~~[`amp_render_post`](amp_render_post.md) - Render AMP post template.~~
-* ~~[`is_amp_endpoint`](is_amp_endpoint.md) - Determine whether the current response being served as AMP.~~
+* ~~[`is_amp_endpoint`](is_amp_endpoint.md) - Determine whether the current response being served as ⚡.~~
 * ~~[`post_supports_amp`](post_supports_amp.md) - Determine whether a given post supports AMP.~~
