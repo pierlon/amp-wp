@@ -27,7 +27,7 @@ jobs:
         id: last-release
         run: |
           PR_TITLES=$(gh api -X GET search/issues -f q='${{ env.QUERY }}' -f sort='created' -f order='desc' --jq '.items.[].title')
-          LAST_VERSION=$(node -e "'$PR_TITLES' && console.log( '$PR_TITLES'.match('v(.+) release') )"
+          LAST_VERSION=$(node -e "'$PR_TITLES' && console.log( '$PR_TITLES'.match('v(.+) release') )")
           echo "::set-output name=version::$(echo "$LAST_VERSION")"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
