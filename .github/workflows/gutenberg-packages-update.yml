@@ -20,6 +20,8 @@ jobs:
       - name: Get latest Gutenberg release
         id: latest-release
         run: echo "::set-output name=version::$(gh api -X GET repos/wordpress/gutenberg/releases/latest --jq '.name')"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Get version from last pull request
         id: last-release
@@ -28,6 +30,7 @@ jobs:
           LAST_VERSION=$(node -e "'$PR_TITLES' && console.log( '$PR_TITLES'.match('v(.+) release') )"
           echo "::set-output name=version::$(echo "$LAST_VERSION")
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           QUERY: 'repo:ampproject/amp-wp is:pr in:title Update Gutenberg packages after'
 
       - name: Determine if the latest Gutenberg release has already been covered
