@@ -1,4 +1,4 @@
-name: Auto-merge
+name: Gutenberg packages update
 
 on:
   # Allow for the workflow to be manually run if needed.
