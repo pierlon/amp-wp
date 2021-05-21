@@ -35,7 +35,7 @@ jobs:
 
       - name: Determine if the latest Gutenberg release has already been covered
         id: determine
-        run: echo "set-ouput name=new::$(php -r "echo json_encode(version_compare('$LATEST_VER', '$LAST_VER', '>'));")
+        run: echo "set-ouput name=new::$(php -r "echo json_encode(version_compare('$LATEST_VER', '$LAST_VER', '>'));")"
         env:
           LAST_VER: ${{ steps.last-release.version }}
           LATEST_VER: ${{ steps.latest-release.version }}
