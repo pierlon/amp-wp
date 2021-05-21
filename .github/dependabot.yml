@@ -39,7 +39,7 @@ updates:
     versions:
     - ">= 7"
   # Updates are handled via the `gutenberg-packages-update` GHA workflow.
-  - dependency-name: @wordpress/*
+  - dependency-name: "@wordpress/*"
 
 # Config for QA Tester plugin.
 - package-ecosystem: composer
